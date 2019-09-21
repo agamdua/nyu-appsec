@@ -1,3 +1,4 @@
 [submodule "AppSecAssignment1"]
 	path = AppSecAssignment1
 	url = https://github.com/kcg295/AppSecAssignment1.git
+	ignore = untracked
