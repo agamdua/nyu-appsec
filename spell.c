@@ -9,24 +9,27 @@ int main(int argc, char **argv) {
 	char file_to_check[LENGTH];
 
 	strcpy(file_to_check, argv[1]);
+	printf("%s \n", file_to_check);
 	strcpy(word_list, argv[2]);
 
-	if (!load_dictionary(word_list, hashtable)) {
-		printf("oops\n");
-		return 1;
-	};
+	printf("[INFO] Loading dictionary");
+	load_dictionary(word_list, hashtable);
 
-	FILE *fp;
-	fp = fopen(file_to_check, "r");
+	// printf("[INFO] Opening next file");
 
-	if (fp == NULL) {
+	FILE *fp1;
+	fp1 = fopen(file_to_check, "r");
+
+	if (fp1 == NULL) {
 		printf("error opening file path: %s", file_to_check);
 		return 1;
 	}
 
 	char * misspelled[MAX_MISSPELLED];
 
-	int misspelled_count = check_words(fp, hashtable, misspelled);
+	printf("[INFO] Checking words now.");
+
+	int misspelled_count = check_words(fp1, hashtable, misspelled);
 	printf("%d", misspelled_count);
 
 	return 0;
@@ -37,16 +40,59 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[])
 {
 	char c;
 	char word[LENGTH + 1];
+	int num_misspelled = 0;
+	int index_misspelled = -1;
 
 	int i = 0;
 
 	while((c = fgetc(fp)) != EOF) {
 		if (c == ' ' || c == '\n') {
-			word[i + 1] = '\0';
+			// TODO: remove punctuation from beginning and end of line
+			word[i] = '\0';
+
+			if (!check_word(word, hashtable)) {
+				misspelled[index_misspelled+1] = word;
+				num_misspelled++;
+			}
+
+			// reset
+			i = 0;
+
+		} else {
+			word[i] = c;
+			i++;
 		}
 	}
+	return num_misspelled;
+}
 
-	return 0;
+
+bool check_word(const char* word, hashmap_t hashtable[]) {
+	printf("Checking word: %s", word);
+	int hash_value = hash_function(word);
+
+	hashmap_t entry = hashtable[hash_value];
+
+	if (entry == '\0') {
+		// there is nothing from the dictionary hashed at this location
+		// so its definitely an error
+		return false;
+	}
+
+	do {
+		// if entry->word is the same as word
+		// return true
+		// otherwise move the pointer along
+		if (strcmp(word, entry->word) == 0) {
+		 	// If there is a match, it is spelled correctly
+			return true;
+		} else {
+		 	// otherwise move to the next node
+			entry = entry->next;
+		}
+	} while (entry != NULL);
+
+	return false;
 }
 
 /** Loads the dictionary and process words to add them to the hashtable
@@ -86,7 +132,7 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[])
 			int hash_value = hash_function(word);
 
 			// generate node type to add in array
-			word[i + 1] = '\0';
+			word[i] = '\0';
 
 			node n;
 
@@ -112,7 +158,10 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[])
 			i++;
 		}
 	}
+	printf("closing file\n");
+
 	fclose(fp);
-	printf("Number of words processed: %d\n", word_counter);
+	printf("Number of words processed: %d \n", word_counter);
+	printf("done?\n");
 	return true;
 }
