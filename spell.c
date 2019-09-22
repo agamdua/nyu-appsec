@@ -1,39 +1,39 @@
 #include "AppSecAssignment1/dictionary.h"
 #include <string.h>
 
-int main(int argc, char **argv) {
-
-	hashmap_t hashtable[HASH_SIZE];
-
-	char word_list[LENGTH];
-	char file_to_check[LENGTH];
-
-	strcpy(file_to_check, argv[1]);
-	printf("%s \n", file_to_check);
-	strcpy(word_list, argv[2]);
-
-	printf("[INFO] Loading dictionary");
-	load_dictionary(word_list, hashtable);
-
-	// printf("[INFO] Opening next file");
-
-	FILE *fp1;
-	fp1 = fopen(file_to_check, "r");
-
-	if (fp1 == NULL) {
-		printf("error opening file path: %s", file_to_check);
-		return 1;
-	}
-
-	char * misspelled[MAX_MISSPELLED];
-
-	printf("[INFO] Checking words now.");
-
-	int misspelled_count = check_words(fp1, hashtable, misspelled);
-	printf("%d", misspelled_count);
-
-	return 0;
-}
+// int main(int argc, char **argv) {
+// 
+// 	hashmap_t hashtable[HASH_SIZE];
+// 
+// 	char word_list[LENGTH];
+// 	char file_to_check[LENGTH];
+// 
+// 	strcpy(file_to_check, argv[1]);
+// 	printf("%s \n", file_to_check);
+// 	strcpy(word_list, argv[2]);
+// 
+// 	printf("[INFO] Loading dictionary");
+// 	load_dictionary(word_list, hashtable);
+// 
+// 	// printf("[INFO] Opening next file");
+// 
+// 	FILE *fp1;
+// 	fp1 = fopen(file_to_check, "r");
+// 
+// 	if (fp1 == NULL) {
+// 		printf("error opening file path: %s", file_to_check);
+// 		return 1;
+// 	}
+// 
+// 	char * misspelled[MAX_MISSPELLED];
+// 
+// 	printf("[INFO] Checking words now.");
+// 
+// 	int misspelled_count = check_words(fp1, hashtable, misspelled);
+// 	printf("%d", misspelled_count);
+// 
+// 	return 0;
+// }
 
 
 int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[])
@@ -51,7 +51,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[])
 			word[i] = '\0';
 
 			if (!check_word(word, hashtable)) {
-				misspelled[index_misspelled+1] = word;
+				strcpy(misspelled[index_misspelled+1],word);
 				num_misspelled++;
 			}
 
